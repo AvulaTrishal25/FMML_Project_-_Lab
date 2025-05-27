@@ -1,0 +1,443 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOXY3kr+2dZrOwliE4D/yrD",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/AvulaTrishal25/FMML_Project_-_Lab/blob/main/Module1Lab2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "id": "8qBvyEem0vLi"
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np\n",
+        "from sklearn import datasets\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "rng = np.random.default_rng(seed=42)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "8LpqjN991GGJ",
+        "outputId": "6948f52f-b771-4ccf-84d5-3c6a63159fee"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            ".. _california_housing_dataset:\n",
+            "\n",
+            "California Housing dataset\n",
+            "--------------------------\n",
+            "\n",
+            "**Data Set Characteristics:**\n",
+            "\n",
+            ":Number of Instances: 20640\n",
+            "\n",
+            ":Number of Attributes: 8 numeric, predictive attributes and the target\n",
+            "\n",
+            ":Attribute Information:\n",
+            "    - MedInc        median income in block group\n",
+            "    - HouseAge      median house age in block group\n",
+            "    - AveRooms      average number of rooms per household\n",
+            "    - AveBedrms     average number of bedrooms per household\n",
+            "    - Population    block group population\n",
+            "    - AveOccup      average number of household members\n",
+            "    - Latitude      block group latitude\n",
+            "    - Longitude     block group longitude\n",
+            "\n",
+            ":Missing Attribute Values: None\n",
+            "\n",
+            "This dataset was obtained from the StatLib repository.\n",
+            "https://www.dcc.fc.up.pt/~ltorgo/Regression/cal_housing.html\n",
+            "\n",
+            "The target variable is the median house value for California districts,\n",
+            "expressed in hundreds of thousands of dollars ($100,000).\n",
+            "\n",
+            "This dataset was derived from the 1990 U.S. census, using one row per census\n",
+            "block group. A block group is the smallest geographical unit for which the U.S.\n",
+            "Census Bureau publishes sample data (a block group typically has a population\n",
+            "of 600 to 3,000 people).\n",
+            "\n",
+            "A household is a group of people residing within a home. Since the average\n",
+            "number of rooms and bedrooms in this dataset are provided per household, these\n",
+            "columns may take surprisingly large values for block groups with few households\n",
+            "and many empty houses, such as vacation resorts.\n",
+            "\n",
+            "It can be downloaded/loaded using the\n",
+            ":func:`sklearn.datasets.fetch_california_housing` function.\n",
+            "\n",
+            ".. rubric:: References\n",
+            "\n",
+            "- Pace, R. Kelley and Ronald Barry, Sparse Spatial Autoregressions,\n",
+            "  Statistics and Probability Letters, 33 (1997) 291-297\n",
+            "\n"
+          ]
+        }
+      ],
+      "source": [
+        "dataset = datasets.fetch_california_housing()\n",
+        "# Dataset description\n",
+        "print(dataset.DESCR)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"Orignal target values:\", dataset.target)\n",
+        "\n",
+        "dataset.target = dataset.target.astype(int)\n",
+        "\n",
+        "print(\"Target values after conversion:\", dataset.target)\n",
+        "print(\"Input variables shape:\", dataset.data.shape)\n",
+        "print(\"Output variables shape:\", dataset.target.shape)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "8cQfAqKNBnQn",
+        "outputId": "34ae6869-8c25-45e0-b720-ecad86cd0f1c"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Orignal target values: [4.526 3.585 3.521 ... 0.923 0.847 0.894]\n",
+            "Target values after conversion: [4 3 3 ... 0 0 0]\n",
+            "Input variables shape: (20640, 8)\n",
+            "Output variables shape: (20640,)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def NN1(traindata, trainlabel, query):\n",
+        "\n",
+        "    diff = (\n",
+        "        traindata - query\n",
+        "    )  # find the difference between features. Numpy automatically takes care of the size here\n",
+        "    sq = diff * diff  # square the differences\n",
+        "    dist = sq.sum(1)  # add up the squares\n",
+        "    label = trainlabel[np.argmin(dist)]\n",
+        "    return label\n",
+        "\n",
+        "\n",
+        "def NN(traindata, trainlabel, testdata):\n",
+        "\n",
+        "    predlabel = np.array([NN1(traindata, trainlabel, i) for i in testdata])\n",
+        "    return predlabel"
+      ],
+      "metadata": {
+        "id": "K61MEN0xBoFX"
+      },
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def RandomClassifier(traindata, trainlabel, testdata):\n",
+        "\n",
+        "\n",
+        "    classes = np.unique(trainlabel)\n",
+        "    rints = rng.integers(low=0, high=len(classes), size=len(testdata))\n",
+        "    predlabel = classes[rints]\n",
+        "    return predlabel"
+      ],
+      "metadata": {
+        "id": "ZElo4WOQCGJ-"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def Accuracy(gtlabel, predlabel):\n",
+        "\n",
+        "    assert len(gtlabel) == len(\n",
+        "        predlabel\n",
+        "    )\n",
+        "    correct = (\n",
+        "        gtlabel == predlabel\n",
+        "    ).sum()  # count the number of times the groundtruth label is equal to the predicted label.\n",
+        "    return correct / len(gtlabel)"
+      ],
+      "metadata": {
+        "id": "Ee67vVRNCH9v"
+      },
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def split(data, label, percent):\n",
+        "    # generate a random number for each sample\n",
+        "    rnd = rng.random(len(label))\n",
+        "    split1 = rnd < percent\n",
+        "    split2 = rnd >= percent\n",
+        "\n",
+        "    split1data = data[split1, :]\n",
+        "    split1label = label[split1]\n",
+        "    split2data = data[split2, :]\n",
+        "    split2label = label[split2]\n",
+        "    return split1data, split1label, split2data, split2label"
+      ],
+      "metadata": {
+        "id": "kTHqVnRsCV7-"
+      },
+      "execution_count": 13,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "testdata, testlabel, alltraindata, alltrainlabel = split(\n",
+        "    dataset.data, dataset.target, 20 / 100\n",
+        ")\n",
+        "print(\"Number of test samples:\", len(testlabel))\n",
+        "print(\"Number of train samples:\", len(alltrainlabel))\n",
+        "print(\"Percent of test data:\", len(testlabel) * 100 / len(dataset.target), \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "923Y-qTECWmk",
+        "outputId": "62e747ec-f99f-4e97-9975-c61eebd095f3"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Number of test samples: 4144\n",
+            "Number of train samples: 16496\n",
+            "Percent of test data: 20.07751937984496 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "traindata, trainlabel, valdata, vallabel = split(\n",
+        "    alltraindata, alltrainlabel, 75 / 100)"
+      ],
+      "metadata": {
+        "id": "YzPQNJvnCaCB"
+      },
+      "execution_count": 15,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "trainpred = NN(traindata, trainlabel, traindata)\n",
+        "trainAccuracy = Accuracy(trainlabel, trainpred)\n",
+        "print(\"Training accuracy using nearest neighbour algorithm:\", trainAccuracy*100, \"%\")\n",
+        "\n",
+        "trainpred = RandomClassifier(traindata, trainlabel, traindata)\n",
+        "trainAccuracy = Accuracy(trainlabel, trainpred)\n",
+        "print(\"Training accuracy using random classifier: \", trainAccuracy*100, \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "oP7xVGxoCeFC",
+        "outputId": "65ed98df-2b54-40b7-a185-b144c35be85f"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training accuracy using nearest neighbour algorithm: 100.0 %\n",
+            "Training accuracy using random classifier:  16.4375808538163 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "valpred = NN(traindata, trainlabel, valdata)\n",
+        "valAccuracy = Accuracy(vallabel, valpred)\n",
+        "print(\"Validation accuracy using nearest neighbour algorithm:\", valAccuracy*100, \"%\")\n",
+        "\n",
+        "\n",
+        "valpred = RandomClassifier(traindata, trainlabel, valdata)\n",
+        "valAccuracy = Accuracy(vallabel, valpred)\n",
+        "print(\"Validation accuracy using random classifier:\", valAccuracy*100, \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "fh-blsfNChdn",
+        "outputId": "248ab009-1165-470d-dadf-f6837650a89a"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Validation accuracy using nearest neighbour algorithm: 34.10852713178294 %\n",
+            "Validation accuracy using random classifier: 16.884689922480618 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "traindata, trainlabel, valdata, vallabel = split(\n",
+        "    alltraindata, alltrainlabel, 75 / 100)\n",
+        "valpred = NN(traindata, trainlabel, valdata)\n",
+        "valAccuracy = Accuracy(vallabel, valpred)\n",
+        "print(\"Validation accuracy using nearest neighbour algorithm:\", valAccuracy*100, \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "GEytrLM0Cn86",
+        "outputId": "90a9f46c-9ae5-413c-d913-48b57adc761a"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Validation accuracy using nearest neighbour algorithm: 34.048257372654156 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "testpred = NN(alltraindata, alltrainlabel, testdata)\n",
+        "testAccuracy = Accuracy(testlabel, testpred)\n",
+        "\n",
+        "print(\"Test accuracy:\", testAccuracy*100, \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "6E7tvvuRC65c",
+        "outputId": "144069a9-a910-4be2-bfa6-6bf95004eb22"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Test accuracy: 34.91795366795367 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def AverageAccuracy(alldata, alllabel, splitpercent, iterations, classifier=NN):\n",
+        "\n",
+        "    accuracy = 0\n",
+        "    for ii in range(iterations):\n",
+        "        traindata, trainlabel, valdata, vallabel = split(\n",
+        "            alldata, alllabel, splitpercent\n",
+        "        )\n",
+        "        valpred = classifier(traindata, trainlabel, valdata)\n",
+        "        accuracy += Accuracy(vallabel, valpred)\n",
+        "    return accuracy / iterations  # average of all accuracies"
+      ],
+      "metadata": {
+        "id": "zvwlhYlWC_Py"
+      },
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "avg_acc = AverageAccuracy(alltraindata, alltrainlabel, 75 / 100, 10, classifier=NN)\n",
+        "print(\"Average validation accuracy:\", avg_acc*100, \"%\")\n",
+        "testpred = NN(alltraindata, alltrainlabel, testdata)\n",
+        "\n",
+        "print(\"Test accuracy:\", Accuracy(testlabel, testpred)*100, \"%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "EBADSpwCDhXn",
+        "outputId": "0d3bb3ad-073b-416f-f811-2b409905585b"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Average validation accuracy: 33.58463539517022 %\n",
+            "Test accuracy: 34.91795366795367 %\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "_WTiylDjDzoZ"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
